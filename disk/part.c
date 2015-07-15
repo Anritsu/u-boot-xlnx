@@ -427,19 +427,31 @@ int get_device(const char *ifname, const char *dev_str,
 	       block_dev_desc_t **dev_desc)
 {
 	char *ep;
-	int dev;
+    int dev, ret;
 
 	dev = simple_strtoul(dev_str, &ep, 16);
 	if (*ep) {
 		printf("** Bad device specification %s %s **\n",
 		       ifname, dev_str);
-		return -1;
+        // DCM
+        printf("** Try to boot Linux from QSPI instead **\n");
+        setenv("shboottype", "fallback");
+        saveenv();
+        ret = run_command(getenv("sfboot"), 1);
+
+        return ret;
 	}
 
 	*dev_desc = get_dev(ifname, dev);
 	if (!(*dev_desc) || ((*dev_desc)->type == DEV_TYPE_UNKNOWN)) {
 		printf("** Bad device %s %s **\n", ifname, dev_str);
-		return -1;
+        // DCM
+        printf("** Try to boot Linux from QSPI instead **\n");
+        setenv("shboottype", "fallback");
+        saveenv();
+        ret = run_command(getenv("sfboot"), 1);
+
+        return ret;
 	}
 
 	return dev;
@@ -579,7 +591,14 @@ int get_device_and_partition(const char *ifname, const char *dev_part_str,
 		ret = get_partition_info(*dev_desc, part, info);
 		if (ret) {
 			printf("** Invalid partition %d **\n", part);
-			goto cleanup;
+            // DCM
+            //goto cleanup;
+            free(dup_str);
+            printf("Try to boot Linux from QSPI\n");
+            setenv("shboottype", "fallback");
+            saveenv();
+            ret = run_command(getenv("sfboot"), 1);
+            return ret;
 		}
 	} else {
 		/*

@@ -522,7 +522,8 @@ static int sd_send_op_cond(struct mmc *mmc)
 	mmc->ocr = cmd.response[0];
 
 	mmc->high_capacity = ((mmc->ocr & OCR_HCS) == OCR_HCS);
-	mmc->rca = 0;
+    // DCM For eMMC the RCA should be 1, but changing it here did not work
+    mmc->rca = 0;
 
 	return 0;
 }
@@ -993,6 +994,8 @@ static int mmc_startup(struct mmc *mmc)
 	 */
 	if (!mmc_host_is_spi(mmc)) { /* cmd not supported in spi */
 		cmd.cmdidx = SD_CMD_SEND_RELATIVE_ADDR;
+        // DCM The RCA for eMMC should be 1
+        mmc->rca = 1;
 		cmd.cmdarg = mmc->rca << 16;
 		cmd.resp_type = MMC_RSP_R6;
 

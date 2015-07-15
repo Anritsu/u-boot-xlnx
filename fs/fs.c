@@ -32,8 +32,14 @@ static int fs_type = FS_TYPE_ANY;
 static inline int fs_probe_unsupported(block_dev_desc_t *fs_dev_desc,
 				      disk_partition_t *fs_partition)
 {
+    int ret;
 	printf("** Unrecognized filesystem type **\n");
-	return -1;
+    // DCM
+    printf("** Try to boot Linux from QSPI instead **\n");
+    setenv("shboottype", "fallback");
+    saveenv();
+    ret = run_command(getenv("sfboot"), 1);
+    return ret;
 }
 
 static inline int fs_ls_unsupported(const char *dirname)

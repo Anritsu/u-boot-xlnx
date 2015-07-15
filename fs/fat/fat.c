@@ -1263,13 +1263,41 @@ long file_fat_read(const char *filename, void *buffer, unsigned long maxsize)
 
 int fat_read_file(const char *filename, void *buf, int offset, int len)
 {
-	int len_read;
+    int len_read, ret;
+    const char* fw_update_status = getenv("fwupdatestatus");
+    
+    len_read = file_fat_read_at(filename, offset, buf, len);
 
-	len_read = file_fat_read_at(filename, offset, buf, len);
-	if (len_read == -1) {
-		printf("** Unable to read file %s **\n", filename);
-		return -1;
-	}
+    if (len_read == -1)  
+    {
+        printf("** Unable to read file %s from SD/eMMC card **\n", filename);
+        printf("** Try to boot Linux from QSPI instead **\n");
+        setenv("shboottype", "fallback");
+        saveenv();
+        ret = run_command(getenv("sfboot"), 1);
+
+        return ret;
+    }
+    else if ((fw_update_status != NULL) && (strstr(fw_update_status, "install") != NULL))
+    {
+        printf("** Firmware Update Status is %s **\n", fw_update_status);
+        printf("** Boot Linux from QSPI instead **\n");
+        setenv("shboottype", "fallback");
+        saveenv();
+        ret = run_command(getenv("sfboot"), 1);
+
+        return ret;
+    }
+
+    // Set the shboottype environment variable to indicate that the target is booting the normal image
+    {
+        const char* sh_boot_type = getenv("shboottype");
+        if ((sh_boot_type == NULL) || (strcmp(sh_boot_type, "normal") != 0))
+        {
+            setenv("shboottype", "normal");
+            saveenv();
+        }
+    }
 
 	return len_read;
 }

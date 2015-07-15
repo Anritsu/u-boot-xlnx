@@ -223,7 +223,6 @@ static int bootm_find_os(cmd_tbl_t *cmdtp, int flag, int argc,
 			 char * const argv[])
 {
 	const void *os_hdr;
-
 	/* get kernel image header, start address and length */
 	os_hdr = boot_get_kernel(cmdtp, flag, argc, argv,
 			&images, &images.os.image_start, &images.os.image_len);
@@ -988,7 +987,15 @@ static const void *boot_get_kernel(cmd_tbl_t *cmdtp, int flag, int argc,
 				BOOTSTAGE_ID_FIT_KERNEL_START,
 				FIT_LOAD_IGNORED, os_data, os_len);
 		if (os_noffset < 0)
+        {
+            // DCM
+            printf("** Error loading FIT image **\n");
+            printf("** Try to boot Linux from QSPI instead **\n");
+            setenv("shboottype", "fallback");
+            saveenv();
+            run_command(getenv("sfboot"), 1);
 			return NULL;
+        }
 
 		images->fit_hdr_os = map_sysmem(img_addr, 0);
 		images->fit_uname_os = fit_uname_kernel;

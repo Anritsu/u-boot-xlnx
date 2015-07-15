@@ -285,9 +285,16 @@ static void zynq_qspi_init_hw(int is_dual, unsigned int cs)
 		ZYNQ_QSPI_CONFIG_MSA_MASK | ZYNQ_QSPI_CONFIG_MCS_MASK |
 		ZYNQ_QSPI_CONFIG_PCS_MASK | ZYNQ_QSPI_CONFIG_FW_MASK |
 		ZYNQ_QSPI_CONFIG_MSTREN_MASK;
-	if (is_dual == MODE_DUAL_STACKED)
+    // DCM This hack sets the QSPI clock divider to 8, which results in a 25 MHz QSPI clock.
+    // If the divider bits [5:3] are not set, the QSPI clock is 100 MHz, which is too high.
+    // The code depends on DUAL MODE being selected in Vivado, which we can't do for Sleepy.
+    // So comment out the if statement to force the clock divider to 8.
+    //if (is_dual == MODE_DUAL_STACKED)
 		config_reg |= 0x10;
 	writel(config_reg, &zynq_qspi_base->confr);
+    // DCM This will start sweeploop here.
+//    writel(0x1E000000, 0xFFFFFFF0);
+//    __asm__("sev");
 
 	if (is_dual == MODE_DUAL_PARALLEL)
 		/* Enable two memories on seperate buses */
