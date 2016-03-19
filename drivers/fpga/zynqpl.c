@@ -177,9 +177,15 @@ int zynq_load(Xilinx_desc *desc, const void *buf, size_t bsize)
 	u32 *buf_start;
 
 	/* Detect if we are going working with partial or full bitstream */
+	/*Sid:It turns out that Vivado does not output a constant sized bitstream
+	      equal to the maximum size of the device. So to qualify a bitstream as full 
+	      or partial based on that seems incorrect.I do not know the implications of 
+              setting this variable to zero for partial reconfiguration. Improvements have 
+	      been made to this driver since we branched, to handle these cases, but updating
+              the drivers/u-boot is not a trivial task. So going with this hack for now.*/
 	if (bsize != desc->size) {
-		printf("%s: Working with partial bitstream\n", __func__);
-		partialbit = 1;
+		printf("%s: Working with partial/full bitstream\n", __func__);
+		partialbit = 0;
 	}
 
 	buf_start = check_data((u8 *)buf, bsize, &swap);
