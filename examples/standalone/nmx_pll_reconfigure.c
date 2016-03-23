@@ -12,6 +12,7 @@
 #define RF_BOARD_IO_BASE_ADDRESS 0x43C00000
 #define BOARD_ID_OFFSET 0x10
 #define CPRI_BOARD_ID   0x4100
+#define BOARD_ID_MASK   (~0xFF)
 
 
 #define BOARD_ID_CHECK_VARIABLE "board_id_check"
@@ -103,7 +104,7 @@ static int board_id_check()
 	}
 
 	unsigned int board_id = (unsigned int)(*(volatile unsigned int *)(RF_BOARD_IO_BASE_ADDRESS + BOARD_ID_OFFSET));
-	if((board_id & CPRI_BOARD_ID) == CPRI_BOARD_ID){
+	if((board_id & BOARD_ID_MASK) == CPRI_BOARD_ID){
 		setenv(BOARD_ID_CHECK_VARIABLE,PASS);
 		//setenv(BOOT_TYPE_VARIABLE,BOOT_TYPE_NORMAL);	
 		return (OK);
