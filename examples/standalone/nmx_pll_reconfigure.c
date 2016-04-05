@@ -75,15 +75,15 @@ int main (int argc, char * const argv[])
 
 	// Set clock phase registers PLL A & B
 	// Module <--> Controller registers.
-	SetClockPhaseRegister1(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_MODULE_RX1_OFFSET, 5);
+	SetClockPhaseRegister1(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_MODULE_RX1_OFFSET, 4);
 	SetClockPhaseRegister2(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_MODULE_RX2_OFFSET, 0);
-	SetClockPhaseRegister1(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_MODULE_TX1_OFFSET, 2);
-	SetClockPhaseRegister2(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_MODULE_TX2_OFFSET, 1);
+	SetClockPhaseRegister1(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_MODULE_TX1_OFFSET, 3);
+	SetClockPhaseRegister2(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_MODULE_TX2_OFFSET, 0);
 
 	// Module to Product B registers
-	SetClockPhaseRegister1(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_PROD_B_RX1_OFFSET, 6);
-	SetClockPhaseRegister2(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_PROD_B_RX2_OFFSET, 2);
-	SetClockPhaseRegister1(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_PROD_B_TX1_OFFSET, 5);
+	SetClockPhaseRegister1(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_PROD_B_RX1_OFFSET, 2);
+	SetClockPhaseRegister2(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_PROD_B_RX2_OFFSET, 0);
+	SetClockPhaseRegister1(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_PROD_B_TX1_OFFSET, 3);
 	SetClockPhaseRegister2(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_PROD_B_TX2_OFFSET, 0);
 
 	// Reset the FPGA PLL's to guarentee clock phases (from Eric T.)
