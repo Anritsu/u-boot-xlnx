@@ -14,6 +14,9 @@
 #define CPRI_BOARD_ID   0x4100
 #define BOARD_ID_MASK   (~0xFF)
 
+#define ZYNQ_CPU0_RUN_LEVEL_REG   0x48000008
+#define PLL_LOAD_COMPLETE         0x1
+
 
 #define BOARD_ID_CHECK_VARIABLE "board_id_check"
 #define PASS "pass"
@@ -77,18 +80,21 @@ int main (int argc, char * const argv[])
 	// Module <--> Controller registers.
 	SetClockPhaseRegister1(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_MODULE_RX1_OFFSET, 4);
 	SetClockPhaseRegister2(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_MODULE_RX2_OFFSET, 0);
-	SetClockPhaseRegister1(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_MODULE_TX1_OFFSET, 3);
+	SetClockPhaseRegister1(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_MODULE_TX1_OFFSET, 6);
 	SetClockPhaseRegister2(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_MODULE_TX2_OFFSET, 0);
 
 	// Module to Product B registers
 	SetClockPhaseRegister1(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_PROD_B_RX1_OFFSET, 2);
 	SetClockPhaseRegister2(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_PROD_B_RX2_OFFSET, 0);
-	SetClockPhaseRegister1(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_PROD_B_TX1_OFFSET, 3);
+	SetClockPhaseRegister1(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_PROD_B_TX1_OFFSET, 2);
 	SetClockPhaseRegister2(nmxPllClockPhaseIoBaseAddr + NMX_PLL_CLOCK_PHASE_PROD_B_TX2_OFFSET, 0);
 
 	// Reset the FPGA PLL's to guarentee clock phases (from Eric T.)
 	WriteWord32(nmxPllResetSystemBaseAddr, NMX_PLL_RESET_PLL_A | NMX_PLL_RESET_PLL_B);
 	WriteWord32(nmxPllResetSystemBaseAddr, 0);
+
+	//Set Run Level
+	WriteWord32(ZYNQ_CPU0_RUN_LEVEL_REG, PLL_LOAD_COMPLETE);
 
 	return (retVal);
 }
@@ -96,7 +102,7 @@ int main (int argc, char * const argv[])
 static int board_id_check()
 {
 	udelay(100 * 1000);	
-	unsigned int pl_done = 	(unsigned int)(*(volatile unsigned int *)(0xf800700c));
+	unsigned int pl_done = 	ReadWord32(DEVCFG_INT_STS);
 	if((pl_done & PL_DONE_INT) != PL_DONE_INT){
 		setenv(BOARD_ID_CHECK_VARIABLE,PL_LOAD_FAIL);
 		//setenv(BOOT_TYPE_VARIABLE,BOOT_TYPE_FALLBACK);
