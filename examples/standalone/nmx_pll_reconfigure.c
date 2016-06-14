@@ -91,7 +91,11 @@ int main (int argc, char * const argv[])
 
 	// Reset the FPGA PLL's to guarentee clock phases (from Eric T.)
 	WriteWord32(nmxPllResetSystemBaseAddr, NMX_PLL_RESET_PLL_A | NMX_PLL_RESET_PLL_B);
+	udelay(1);
 	WriteWord32(nmxPllResetSystemBaseAddr, 0);
+
+	//PLL settling time
+	udelay(100 * 1000);
 
 	//Set Run Level
 	WriteWord32(ZYNQ_CPU0_RUN_LEVEL_REG, PLL_LOAD_COMPLETE);
